@@ -1,54 +1,21 @@
 ФИО: Еремеев Александр Николаевич
 Группа: Б9123-09.03.01 цд
-API: PokeAPI (https://pokeapi.co/) — бесплатный открытый RESTful API без ключей
 
-Что хранится в Room
+## Юнит-тесты (32 теста)
 
-Таблица: favourites
-- pokemonId (Int, Primary Key) — ID покемона
-- pokemonName (String) — имя покемона
-- addedAt (Long) — время добавления, для сортировки
+PokemonListViewModelTest — 11 тестов: загрузка списка, ошибка, retry, пустой результат, поиск, добавление и удаление избранных, дубликаты, отражение избранных в состоянии, обновление списка.
 
-Сценарий: Favourites — избранное переживает перезапуск приложения.
-FavouriteRepository предоставляет Flow из Room DAO. Любое изменение в БД автоматически уведомляет PokemonListViewModel через подписку — без ручной синхронизации.
+PokemonDetailViewModelTest — 5 тестов: начальное состояние, успешная загрузка, ошибка, retry, корректная передача pokemonId через SavedStateHandle.
 
-Как проверить
+PokemonRepositoryTest — 6 тестов: получение списка, ошибка сети, кэширование деталей, поиск с пустой строкой, поиск без учёта регистра, возврат кэша при недоступности сети.
 
-1. Запустить приложение
-2. Добавить Pikachu (№25) и Charizard (№6) в избранное — нажать на сердечко в списке или на экране деталей
-3. Перейти на экран Избранного — оба покемона отображаются
-4. Полностью закрыть приложение
-5. Запустить приложение снова
-6. Открыть Избранное — Pikachu и Charizard остались
+FavouriteRepositoryUnitTest — 5 тестов: получение Flow из DAO, добавление, удаление, isFavourite true/false.
 
-Архитектура (что изменилось в ДЗ4 по сравнению с ДЗ3)
 
-- Hilt — все зависимости (Retrofit, OkHttp, Room, Repository) создаются в AppModule и инжектируются через @Inject constructor
-- @HiltViewModel — PokemonListViewModel и PokemonDetailViewModel получают зависимости без фабрик
-- SavedStateHandle в PokemonDetailViewModel — Hilt автоматически передаёт pokemonId из аргументов навигации
-- FavouriteRepository — новый репозиторий, единственный источник правды для избранного, работает через Room Flow
-- PokemonApplication — @HiltAndroidApp
-- ViewModelFactories.kt — удалён (Hilt заменяет)
-- RetrofitClient.kt — удалён (перенесён в AppModule)
+## Интеграционные тесты (15 тестов)
 
-Скриншоты
+FavouriteDaoTest — 7 тестов: добавление и чтение через Flow, удаление, дубликаты, isFavourite, последовательность эмиссий Flow.
 
-<img width="576" height="1280" alt="image" src="https://github.com/user-attachments/assets/0a07168a-85b8-4e38-9de6-c96d8cadacf9" />
+FavouriteRepositoryIntegrationTest — 4 теста: добавление через репозиторий и чтение из Flow, изменения Flow при add/remove, дубликаты, isFavourite.
 
-(скриншот Loading)
-
-<img width="576" height="1280" alt="image" src="https://github.com/user-attachments/assets/f6fc6896-8735-4030-bd50-6d140d1f2aa1" />
-
-(скриншот списка)
-
-<img width="576" height="1280" alt="image" src="https://github.com/user-attachments/assets/24a4bff3-6125-4935-b0ec-50b1250da60c" />
-
-(скриншот детального экрана)
-
-<img width="576" height="1280" alt="image" src="https://github.com/user-attachments/assets/6dd3aa10-5ba9-4288-9f96-99afe934abdb" />
-
-(скриншот избранного)
-
-<img width="576" height="1280" alt="image" src="https://github.com/user-attachments/assets/2781a63a-2fb7-4448-adb2-533cf35860a0" />
-
-(скриншот ошибки с кнопкой Retry)
+PokemonListViewModelIntegrationTest — 4 теста: сохранение избранного в Room, удаление из Room, дубликаты, переход из Error в Success после retry.
